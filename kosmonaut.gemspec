@@ -8,6 +8,7 @@ Gem::Specification.new do |s|
   s.description = "Wrapper for the WebRocket client - Kosmonaut"
   s.authors = ["Krzysztof Kowalik", "Cubox"]
   s.email = "chris@nu7hat.ch"
+  s.homepage = "http://webrocket.io/"
   s.platform = Gem::Platform::RUBY
   s.extensions = ["ext/kosmonaut/extconf.rb"]
   s.license = "MIT"
