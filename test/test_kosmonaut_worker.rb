@@ -1,6 +1,14 @@
 require File.expand_path("../helper", __FILE__)
 
 class MyWorker < Kosmonaut::Worker
+  def on_message(event, data)
+  end
+  
+  def on_error(errcode)
+  end
+
+  def on_exception(err)
+  end
 end
 
 class TestKosmonautWorker < MiniTest::Unit::TestCase
