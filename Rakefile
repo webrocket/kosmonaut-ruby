@@ -1,8 +1,8 @@
 # -*- ruby -*-
 begin
   require 'rake/extensiontask'
-  Rake::ExtensionTask.new("kosmonaut") do |ext|
-    ext.lib_dir = 'lib/kosmonaut/c'
+  Rake::ExtensionTask.new("ckosmonaut") do |ext|
+    ext.lib_dir = 'lib/'
     ext.source_pattern = "*.{c,h}"
   end
 rescue LoadError

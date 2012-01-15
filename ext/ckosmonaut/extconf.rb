@@ -18,4 +18,4 @@ have_library('czmq')
 have_library('uuid', 'uuid_generate')
 have_library('kosmonaut')
 
-create_makefile('kosmonaut')
+create_makefile('ckosmonaut')

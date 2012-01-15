@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.email = "chris@nu7hat.ch"
   s.homepage = "http://webrocket.io/"
   s.platform = Gem::Platform::RUBY
-  s.extensions = ["ext/kosmonaut/extconf.rb"]
+  s.extensions = ["ext/ckosmonaut/extconf.rb"]
   s.license = "MIT"
 
   s.files = `git ls-files`.split("\n")

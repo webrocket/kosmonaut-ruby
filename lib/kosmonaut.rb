@@ -1,3 +1,3 @@
-require 'kosmonaut/c/kosmonaut'
+require 'ckosmonaut'
 require 'kosmonaut/worker'
 require 'kosmonaut/client'
