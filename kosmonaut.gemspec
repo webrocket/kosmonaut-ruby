@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.authors = ["Krzysztof Kowalik", "Cubox"]
   s.email = "chris@nu7hat.ch"
   s.platform = Gem::Platform::RUBY
-  s.extensions = FileList["ext/**/extconf.rb"]
+  s.extensions = ["ext/kosmonaut/extconf.rb"]
   s.license = "MIT"
 
   s.files = `git ls-files`.split("\n")
@@ -18,4 +18,5 @@ Gem::Specification.new do |s|
 
   s.add_dependency "json", "~> 1.0"
   s.add_development_dependency "rake-compiler", "~> 0.7"
+  s.add_development_dependency "gem-compile"
 end
