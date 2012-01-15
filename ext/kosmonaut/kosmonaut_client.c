@@ -18,7 +18,14 @@ rb_kosmonaut_client_new (VALUE class,
     const char* _secret = StringValuePtr(secret);
     kosmonaut_client_t* ptr = kosmonaut_client_new(_vhost, _secret);
     VALUE self = Data_Wrap_Struct(class, 0, s_rb_kosmonaut_client_free, ptr);
+    rb_obj_call_init(self, 0, NULL);
     return self;
+}
+
+VALUE
+rb_kosmonaut_client_init (VALUE self)
+{
+    return Qnil;
 }
 
 VALUE
@@ -108,9 +115,11 @@ void
 Init_kosmonaut_client ()
 {
     VALUE rb_mKosmonaut = rb_define_module("Kosmonaut");
-    VALUE rb_cKosmonautClient = rb_define_class_under(rb_mKosmonaut, "Client", rb_cObject);
+    VALUE rb_mKosmonautC = rb_define_module_under(rb_mKosmonaut, "C");
+    VALUE rb_cKosmonautClient = rb_define_class_under(rb_mKosmonautC, "Client", rb_cObject);
 
     rb_define_singleton_method(rb_cKosmonautClient, "new", rb_kosmonaut_client_new, 2);
+    rb_define_method(rb_cKosmonautClient, "initialize", rb_kosmonaut_client_init, 0);
     rb_define_method(rb_cKosmonautClient, "connect", rb_kosmonaut_client_connect, 1);
     rb_define_method(rb_cKosmonautClient, "disconnect", rb_kosmonaut_client_disconnect, 0);
     rb_define_method(rb_cKosmonautClient, "broadcast", rb_kosmonaut_client_broadcast, 3);
