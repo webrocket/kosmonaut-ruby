@@ -1,0 +1,66 @@
+Ruby wrapper for Kosmonaut - the WebRocket client
+=================================================
+
+Kosmonaut.rb is a ruby extension for the WebRocket client.
+The idea of the Kosmonaut is to keep it simple, straightforward
+and easy to maintain, although to allow to build more
+sophisticated libraries at top of it.
+
+Installation
+------------
+You can install it easily from rubygems:
+
+    $ gem install kosmonaut
+
+Or using bundler, add this line to your gemfile:
+
+    gem 'kosmonaut'
+
+Usage
+-----
+Kosmonaut has two components: Client and Worker. Client is
+used to manage a WebRocket's vhost and broadcast messages,
+for example:
+
+    c = Kosmonaut::Client.new("/vhost", "token...")
+    c.connect("tcp://127.0.0.1:8081")
+
+    c.open_channel("world")
+    c.broadcast("world", "hello", {:who => "Chris"})
+    c.broadcast("world", "bye", {:see_you_when => "Soon!"})
+
+    c.disconnect
+
+Worker is used to listen for incoming messages and handle
+it in user's desired way, example:
+
+   class MyWorker < Kosmonaut::Worker
+     def on_message(event, data)
+       if event == "hello"
+         puts "Hello #{data[:who]}"
+       end
+     end
+
+     def on_error(errcode)
+       puts "Error encountered (code #{errcode})"
+     end
+
+     def on_exception(err)
+       puts "Ouch! something went wrong! Error: #{err.to_s}"
+     end
+   end
+
+   w = MyWorker.new("/vhost", "token...")
+   w.connect("tcp://127.0.0.1:8081")
+   w.listen
+
+Sponsors
+--------
+All the work on the project is sponsored and supported by Cubox - an
+awesome dev shop from Uruguay <http://cuboxsa.com>.
+   
+Copyright
+---------
+Copyright (C) 2011 by Krzysztof Kowalik <chris@nu7hat.ch>
+
+Released under the MIT license. See COPYING for details.
