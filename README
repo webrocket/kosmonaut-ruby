@@ -1,5 +1,5 @@
-Ruby wrapper for Kosmonaut - the WebRocket client
-=================================================
+Kosmonaut - ruby client for the WebRocket
+=========================================
 
 Kosmonaut.rb is a ruby backend client for the WebRocket.
 The idea of the Kosmonaut is to keep it simple, straightforward
