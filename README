@@ -1,7 +1,7 @@
 Ruby wrapper for Kosmonaut - the WebRocket client
 =================================================
 
-Kosmonaut.rb is a ruby extension for the WebRocket client.
+Kosmonaut.rb is a ruby backend client for the WebRocket.
 The idea of the Kosmonaut is to keep it simple, straightforward
 and easy to maintain, although to allow to build more
 sophisticated libraries at top of it.
@@ -22,14 +22,11 @@ Kosmonaut has two components: Client and Worker. Client is
 used to manage a WebRocket's vhost and broadcast messages,
 for example:
 
-    c = Kosmonaut::Client.new("/vhost", "token...")
-    c.connect("tcp://127.0.0.1:8081")
-
+    c = Kosmonaut::Client.new("wr://token@127.0.0.1:8081/vhost")
     c.open_channel("world")
     c.broadcast("world", "hello", {:who => "Chris"})
     c.broadcast("world", "bye", {:see_you_when => "Soon!"})
-
-    c.disconnect
+    c.request_single_access_token(".*")
 
 Worker is used to listen for incoming messages and handle
 it in user's desired way, example:
@@ -41,8 +38,8 @@ it in user's desired way, example:
        end
      end
 
-     def on_error(errcode)
-       puts "Error encountered (code #{errcode})"
+     def on_error(err)
+       puts "Error encountered (code #{err.to_s})"
      end
 
      def on_exception(err)
@@ -50,10 +47,41 @@ it in user's desired way, example:
      end
    end
 
-   w = MyWorker.new("/vhost", "token...")
-   w.connect("tcp://127.0.0.1:8081")
+   w = MyWorker.new("wr://token@127.0.0.1:8081/vhost")
    w.listen
 
+Hacking
+-------
+If you want to run kosmonaut.rb in development mode, first clone
+the repo and install dependencies:
+
+   $ git clone https://github.com/webrocket/kosmonaut.rb.git
+   $ cd kosmonaut.rb
+   $ bundle
+
+To run the tests you should have a `webrocket-server` instance
+running with a `/test` vhost created. To create it use the
+`webrocket-admin` tool:
+
+   $ webrocket-admin add_vhost /test
+   Reading cookie... done
+   Adding a vhost... done
+   ---
+   Access token for this vhost: a70d7d2c0bc5761620948b3420d18df9072ca0d1
+
+Now get the access token and run kosmonaut's tests using
+rake task:
+
+   $ VHOST_TOKEN=a70d7d2c0bc5761620948b3420d18df9072ca0d1 rake test
+
+If you want to get debug output add a `DEBUG` environment variable
+while running tests:
+
+   $ VHOST_TOKEN=... DEBUG=1 rake test
+
+With any quirks and doubts don't hesitate to start a github issue
+or email one of the maintainers.
+   
 Sponsors
 --------
 All the work on the project is sponsored and supported by Cubox - an
