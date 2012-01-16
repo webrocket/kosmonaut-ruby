@@ -1,0 +1,8 @@
+2012-01-16  Krzysztof Kowalik  <chris@nu7hat.ch>
+
+	* lib/kosmonaut/socket.rb: base for worker and client
+	* lib/kosmonaut/worker.rb: majordomo worker
+	* lib/kosmonaut/client.rb: majordomo client
+	* lib/kosmonaut/errors.rb: possible protocol errors
+	* lib/kosmonaut.rb: base tools
+	* test/: tests for client and worker api
