@@ -1,6 +1,5 @@
 #include <assert.h>
 #include <stdio.h>
-#include <uuid/uuid.h>
 #include <string.h>
 #include <unistd.h>
 
