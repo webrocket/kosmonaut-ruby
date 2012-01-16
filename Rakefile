@@ -29,7 +29,7 @@ SRC_DIR = "#{ROOT}/ext/kosmonaut"
 EXT_DIR = "#{ROOT}/ext/kosmonaut_ext"
 INC_DIR = "#{ROOT}/ext/include"
 
-task :before_compile do
+task :prepare_ext do
   `mkdir -p #{EXT_DIR}`
   `mkdir -p #{INC_DIR}`
   `cp #{SRC_DIR}/*.{c,h} #{EXT_DIR}`
@@ -40,12 +40,16 @@ task :before_compile do
   }
 end
 
-task :before_clean do
+task :cleanup_ext do
   `rm -rf #{EXT_DIR} #{INC_DIR}`
 end
 
-Rake::Task[:clean].prerequisites.unshift(:before_clean)
-Rake::Task[:compile].prerequisites.unshift(:before_compile)
+task :build => [:prepare_ext] do
+  ``
+end
+
+Rake::Task[:clean].prerequisites.unshift(:cleanup_ext)
+Rake::Task[:compile].prerequisites.unshift(:prepare_ext)
 
 task :clean_and_compile => [:clean, :compile]
 Rake::Task[:test].prerequisites.unshift(:clean_and_compile)
