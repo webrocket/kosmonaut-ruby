@@ -30,22 +30,22 @@ EXT_DIR = "#{ROOT}/ext/kosmonaut_ext"
 INC_DIR = "#{ROOT}/ext/include"
 
 task :prepare_ext do
-  `mkdir -p #{EXT_DIR}`
-  `mkdir -p #{INC_DIR}`
-  `cp #{SRC_DIR}/*.{c,h} #{EXT_DIR}`
-  `cp #{SRC_DIR}/extconf.rb #{EXT_DIR}`
+  system("mkdir -p #{EXT_DIR}")
+  system("mkdir -p #{INC_DIR}")
+  system("cp #{SRC_DIR}/*.{c,h} #{EXT_DIR}")
+  system("cp #{SRC_DIR}/extconf.rb #{EXT_DIR}")
   %w{zmq czmq kosmonaut}.each { |lib|
-    `cp -R #{SRC_DIR}/lib#{lib}/src/* #{EXT_DIR}`
-    `cp -R #{SRC_DIR}/lib#{lib}/include/* #{INC_DIR}`
+    system("cp -R #{SRC_DIR}/lib#{lib}/src/* #{EXT_DIR}")
+    system("cp -R #{SRC_DIR}/lib#{lib}/include/* #{INC_DIR}")
   }
 end
 
 task :cleanup_ext do
-  `rm -rf #{EXT_DIR} #{INC_DIR}`
+  system("rm -rf #{EXT_DIR} #{INC_DIR}")
 end
 
 task :build => [:prepare_ext] do
-  ``
+  system("gem build kosmonaut.gemspec")
 end
 
 Rake::Task[:clean].prerequisites.unshift(:cleanup_ext)
