@@ -1,6 +1,11 @@
 *.so
 *.o
+*.lo
+*.la
 *.log
+*.pc
+*.pc.in
+stamp-h1
 Makefile
 \#.*
 .\#.*
@@ -16,3 +21,5 @@ eproject.cfg
 .DS_Store
 *.gem
 *.build
+ext/kosmonaut_ext
+ext/include
