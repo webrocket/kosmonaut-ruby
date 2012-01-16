@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.homepage = "http://webrocket.io/"
   s.license = "MIT"
 
-  s.files = Dir["{lib/**/*.rb,test/*.rb,Rakefile,README*,COPYING,*.gemspec}"]
+  s.files = Dir["{lib/**/*.rb,test/*.rb,Rakefile,README,COPYING,NEWS,ChangeLog,*.gemspec}"]
   s.test_files = Dir["test/*.rb"]
   s.require_paths = ["lib"]
 

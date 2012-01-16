@@ -1,0 +1,8 @@
+Releases
+========
+
+v0.2.0
+------
+* Pure ruby implementation of the client and worker using
+  majordomo pattern.
+* Tests for the API
