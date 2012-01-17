@@ -3,7 +3,7 @@ require 'rubygems'
 
 Gem::Specification.new do |s|
   s.name = "kosmonaut"
-  s.version = "0.2.0"
+  s.version = "0.2.1"
   s.summary = "Ruby client for the WebRocket backend"
   s.description = "The WebRocket server backend client for ruby programming language"
   s.authors = ["Krzysztof Kowalik", "Cubox"]
