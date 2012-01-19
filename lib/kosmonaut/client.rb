@@ -49,8 +49,8 @@ module Kosmonaut
       perform_request(payload)
     end
 
-    def open_channel(name, type)
-      payload = ["OC", name, type]
+    def open_channel(name)
+      payload = ["OC", name]
       perform_request(payload)
     end
 

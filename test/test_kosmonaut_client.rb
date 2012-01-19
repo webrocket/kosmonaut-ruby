@@ -18,11 +18,11 @@ class TestKosmonautClient < MiniTest::Unit::TestCase
   end
   
   def _test_open_channel
-    @client.open_channel("foo", 0)
+    @client.open_channel("foo")
   end
 
   def _test_open_channel_with_invalid_name
-    @client.open_channel("%%%", 0)
+    @client.open_channel("%%%")
     assert false
   rescue Kosmonaut::InvalidChannelNameError
   end
