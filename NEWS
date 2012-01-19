@@ -1,8 +1,11 @@
 Releases
 ========
 
+v0.2.1
+------
+* Fixed behaviour of the worker's listener.
+
 v0.2.0
 ------
-* Pure ruby implementation of the client and worker using
-  majordomo pattern.
+* Pure ruby implementation of the client and worker using majordomo pattern.
 * Tests for the API
