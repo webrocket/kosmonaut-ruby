@@ -1,3 +1,8 @@
+2012-01-18  Krzysztof Kowalik  <chris@nu7hat.ch>
+
+	* lib/kosmonaut.rb: added documentation
+	* lib/kosmonaut/client.rb: added docs for part of the methods
+
 2012-01-16  Krzysztof Kowalik  <chris@nu7hat.ch>
 
 	* lib/kosmonaut/socket.rb: base for worker and client

@@ -9,13 +9,41 @@ module Kosmonaut
   class Client < Socket
     include Kosmonaut
 
-    REQUEST_TIMEOUT = 5 # in seconds
+    # Maximum number of seconds to wait for the request to being processed.
+    REQUEST_TIMEOUT = 5
 
+    # Public: The Client constructor. Pre-configures the client instance. See
+    # also the Kosmonaut::Socket#initialize for the details.
+    # 
+    # url - The WebRocket backend endpoint URL to connect to.
+    #
+    # The endpoint's URL must have the following format:
+    #
+    #     [scheme]://[secret]@[host]:[port]/[vhost]
+    #
+    # Examples
+    #
+    #     c = Kosmonaut::Client.new("wr://f343...fa4a@myhost.com:8080/hello")
+    #     c.broadcast("room", "status", {"message" => "is going to the beach!"})
+    # 
     def initialize(url)
       super(url)
       @mtx = Mutex.new
     end
 
+    # Public: Broadcasts a event with attached data on the specified channel.
+    # The data attached to the event must be a hash!
+    #
+    # channel - A name of the channel to broadcast to.
+    # event   - A name of the event to be triggered.
+    # data    - The data attached to the event.
+    #
+    # Examples
+    #
+    #     c.broadcast("room", "away", {"message" => "on the meeting"})
+    #     c.broadcast("room". "message", {"content" => "Hello World!"})
+    #     c.broadcast("room". "status", {"message" => "is saying hello!"})
+    #
     def broadcast(channel, event, data)
       payload = ["BC", channel, event, data.to_json]
       perform_request(payload)
