@@ -6,7 +6,7 @@ module Kosmonaut
     include Kosmonaut
 
     RECONNECT_DELAY = 1000 # in milliseconds
-    HEARTBEAT_INTERVAL = 2000 # in milliseconds
+    HEARTBEAT_INTERVAL = 1000 # in milliseconds
 
     def initialize(url)
       super(url)
@@ -31,24 +31,24 @@ module Kosmonaut
           unless @sock
             raise Errno::ECONNREFUSED
           end
+          msg, cmd = nil, nil
           Timeout.timeout(((@heartbeat_ivl * 2).to_f / 1000.0).to_i + 1) {
             msg = recv(@sock)
             raise Errno::ECONNRESET if @sock.eof? || msg.empty?
             log("Worker/RECV : #{msg.join("\n").inspect}")
             cmd = msg.shift
-              
-            case cmd
-            when "HB"
-              # nothing to do...
-            when "QT"
-              reconnect
-              next
-            when "TR"
-              message_handler(msg[0])
-            when "ER"
-              error_handler(msg.size < 1 ? 597 : msg[0])
-            end
           }
+          case cmd
+          when "HB"
+            # nothing to do...
+          when "QT"
+            reconnect
+            next
+          when "TR"
+            message_handler(msg[0])
+          when "ER"
+            error_handler(msg.size < 1 ? 597 : msg[0])
+          end
         rescue Timeout::Error, Errno::ECONNRESET, Errno::ECONNREFUSED => err
           log("Worker/RECONNECT: " + err.to_s)
           sleep(@reconnect_delay.to_f / 1000.0)
@@ -76,9 +76,9 @@ module Kosmonaut
     private
 
     def send(s, payload)
-      packet = pack(payload)
+      packet = pack(payload.dup)
       @sock.write(packet)
-      log("Worker/SENT : #{packet.inspect}")
+      log("Worker/SENT : #{(payload.join("\n") + "\n").inspect}")
     end
 
     def disconnect
@@ -99,9 +99,7 @@ module Kosmonaut
     def message_handler(data)
       if respond_to?(:on_message)
         payload = JSON.parse(data.to_s)
-        event = payload.keys.first
-        data = data[event]
-        on_message(event, data)
+        on_message(*payload.first)
       end
     rescue => err
       exception_handler(err)
