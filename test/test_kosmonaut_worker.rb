@@ -21,7 +21,7 @@ class TestKosmonautWorker < MiniTest::Unit::TestCase
 
   def test_api
     Thread.new {
-      sleep(15)
+      sleep(10)
       @worker.stop
     }
     @worker.listen

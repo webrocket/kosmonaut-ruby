@@ -1,9 +1,10 @@
 # -*- ruby -*-
 require 'rubygems'
+require File.expand_path("../lib/kosmonaut/version", __FILE__)
 
 Gem::Specification.new do |s|
   s.name = "kosmonaut"
-  s.version = "0.2.1"
+  s.version = Kosmonaut.version
   s.summary = "Ruby client for the WebRocket backend"
   s.description = "The WebRocket server backend client for ruby programming language"
   s.authors = ["Krzysztof Kowalik", "Cubox"]

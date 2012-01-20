@@ -1,3 +1,7 @@
+2012-01-20  Krzysztof Kowalik  <chris@nu7hat.ch>
+
+	* test/test_kosmonaut_worker.rb: shortened test time
+
 2012-01-18  Krzysztof Kowalik  <chris@nu7hat.ch>
 
 	* lib/kosmonaut.rb: added documentation
