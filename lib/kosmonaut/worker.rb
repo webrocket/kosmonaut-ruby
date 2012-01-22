@@ -3,10 +3,8 @@ require 'thread'
 
 module Kosmonaut
   class Worker < Socket
-    include Kosmonaut
-
     RECONNECT_DELAY = 1000 # in milliseconds
-    HEARTBEAT_INTERVAL = 1000 # in milliseconds
+    HEARTBEAT_INTERVAL = 500 # in milliseconds
 
     def initialize(url)
       super(url)
@@ -24,20 +22,19 @@ module Kosmonaut
       while true
         begin
           if !alive?
-            send(@sock, ["QT"]) if @sock
+            send(@sock, ["QT"])
             disconnect
             break
           end
           unless @sock
             raise Errno::ECONNREFUSED
           end
-          msg, cmd = nil, nil
-          Timeout.timeout(((@heartbeat_ivl * 2).to_f / 1000.0).to_i + 1) {
-            msg = recv(@sock)
-            raise Errno::ECONNRESET if @sock.eof? || msg.empty?
-            log("Worker/RECV : #{msg.join("\n").inspect}")
-            cmd = msg.shift
-          }
+
+          msg = recv(@sock)
+          raise Errno::ECONNRESET if @sock.eof? || msg.empty?
+          Kosmonaut.log("Worker/RECV : #{msg.join("\n").inspect}")
+          cmd = msg.shift
+
           case cmd
           when "HB"
             # nothing to do...
@@ -49,11 +46,12 @@ module Kosmonaut
           when "ER"
             error_handler(msg.size < 1 ? 597 : msg[0])
           end
-        rescue Timeout::Error, Errno::ECONNRESET, Errno::ECONNREFUSED => err
-          log("Worker/RECONNECT: " + err.to_s)
+        rescue Errno::EAGAIN, Errno::ECONNRESET, Errno::ECONNREFUSED, IOError => err
+          Kosmonaut.log("Worker/RECONNECT: " + err.to_s)
           sleep(@reconnect_delay.to_f / 1000.0)
           reconnect
         end
+        # Send heartbeat if it's time.
         if Time.now.to_f > @heartbeat_at && @sock
           send(@sock, ["HB"])
           @heartbeat_at = Time.now.to_f + (@heartbeat_ivl.to_f / 1000.0)
@@ -75,24 +73,22 @@ module Kosmonaut
 
     private
 
-    def send(s, payload)
-      packet = pack(payload.dup)
-      @sock.write(packet)
-      log("Worker/SENT : #{(payload.join("\n") + "\n").inspect}")
+    def send(s, payload, with_identity=false)
+      return unless s
+      packet = pack(payload, with_identity)
+      s.write(packet)
+      Kosmonaut.log("Worker/SENT : #{packet.inspect}")
     end
 
     def disconnect
-      if @sock
-        @sock.close
-        @sock = nil
-      end
+      @sock.close if @sock 
+    rescue IOError
     end
-
+      
     def reconnect
-      disconnect
-      @sock = connect
-      send(@sock, ["RD"])
-      @heartbeat_at = Time.now.to_f + (@heartbeat_ivl.to_f / 1000.0)      
+      @sock = connect(((@heartbeat_ivl * 2).to_f / 1000.0).to_i + 1)
+      send(@sock, ["RD"], true)
+      @heartbeat_at = Time.now.to_f + (@heartbeat_ivl.to_f / 1000.0)
     rescue Errno::ECONNREFUSED
     end
 

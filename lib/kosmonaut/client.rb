@@ -1,16 +1,10 @@
 require 'json'
-require 'uri'
-require 'socket'
-require 'securerandom'
-require 'timeout'
 require 'thread'
 
 module Kosmonaut
   class Client < Socket
-    include Kosmonaut
-
     # Maximum number of seconds to wait for the request to being processed.
-    REQUEST_TIMEOUT = 5
+    REQUEST_TIMEOUT = 5.0
 
     # Public: The Client constructor. Pre-configures the client instance. See
     # also the Kosmonaut::Socket#initialize for the details.
@@ -73,21 +67,19 @@ module Kosmonaut
     def perform_request(payload)
       @mtx.synchronize {
         response = []
-        Timeout.timeout(REQUEST_TIMEOUT) {
-          s = connect
-          packet = pack(payload)
-          log("Client/REQ : #{packet.inspect}")
-          s.write(packet)
-          response = recv(s)
-          s.close
-        }
+        s = connect(REQUEST_TIMEOUT)
+        packet = pack(payload)
+        Kosmonaut.log("Client/REQ : #{packet.inspect}")
+        s.write(packet)
+        response = recv(s)
+        s.close
         parse_response(response)
       }
     end
 
     def parse_response(response)
       cmd = response[0].to_s
-      log("Client/RES : #{response.join("\n").inspect}")
+      Kosmonaut.log("Client/RES : #{response.join("\n").inspect}")
       case cmd
       when "OK"
         return 0
