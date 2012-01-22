@@ -78,6 +78,7 @@ module Kosmonaut
       packet = pack(payload, with_identity)
       s.write(packet)
       Kosmonaut.log("Worker/SENT : #{packet.inspect}")
+    rescue Errno::EPIPE
     end
 
     def disconnect
