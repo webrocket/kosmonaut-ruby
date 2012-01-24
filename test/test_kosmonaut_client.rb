@@ -48,7 +48,7 @@ class TestKosmonautClient < MiniTest::Unit::TestCase
   end
 
   def _test_request_single_access_token
-    token = @client.request_single_access_token(".*")
+    token = @client.request_single_access_token("joe", ".*")
     assert token
     assert_equal 128, token.size
   end

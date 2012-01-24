@@ -1,3 +1,7 @@
+2012-01-24  Krzysztof Kowalik  <chris@nu7hat.ch>
+
+	* lib/kosmonaut/client.rb: request_single_access_token adjusted to new proto
+
 2012-01-20  Krzysztof Kowalik  <chris@nu7hat.ch>
 
 	* lib/kosmonaut/*.rb: optimized sockets thanks to using raw system timeouts

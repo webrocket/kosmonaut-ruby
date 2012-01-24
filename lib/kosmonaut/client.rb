@@ -53,8 +53,8 @@ module Kosmonaut
       perform_request(payload)
     end
 
-    def request_single_access_token(permission)
-      payload = ["AT", permission]
+    def request_single_access_token(uid, permission)
+      payload = ["AT", uid, permission]
       perform_request(payload)
     end
 
