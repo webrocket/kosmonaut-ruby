@@ -1,6 +1,25 @@
 Releases
 ========
 
+v0.3.0
+------
+* Kosmonaut::Client#request_single_access token gets 2 arguments now - uid and
+  permission - according to new spec and implementation of WebRocket. 
+
+v0.2.4
+------
+* Handled broken pipe error.
+* Timeouts switched to raw socket options.
+
+v0.2.3
+------
+* Worker's listener tweaks and optimization.
+
+v0.2.2
+------
+* Optimized timeouts.
+* Fixed bug in opening new channel.
+
 v0.2.1
 ------
 * Fixed behaviour of the worker's listener.

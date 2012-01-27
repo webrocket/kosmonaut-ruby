@@ -42,12 +42,35 @@ module Kosmonaut
       payload = ["BC", channel, event, data.to_json]
       perform_request(payload)
     end
-
+    
+    # Public: Opens specified channel. If channel already exists, then ok 
+    # response will be received anyway. If channel name is starts with the
+    # `presence-` or `private-` prefix, then appropriate type of the channel
+    # will be created.
+    #
+    # name - A name of the channel to be created.
+    #
+    # Examples
+    #
+    #     c.open_channel("room")
+    #     c.open_channel("presence-room")
+    #     c.open_channel("private-room")
+    #     
     def open_channel(name)
       payload = ["OC", name]
       perform_request(payload)
     end
 
+    # Public: Closes specified channel. If channel doesn't exist then an
+    # error will be thrown.
+    #
+    # name - A name of the channel to be deleted.
+    #
+    # Examples
+    #
+    #     c.close_channel("hello")
+    #     c.close_channel("presence-room")
+    #
     def close_channel(name)
       payload = ["CC", name]
       perform_request(payload)
