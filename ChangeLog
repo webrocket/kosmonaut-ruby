@@ -1,3 +1,8 @@
+2012-01-28  Krzysztof Kowalik  <chris@nu7hat.ch>
+
+	* lib/kosmonaut/: documentation and minor fixes
+	* test/test_kosmonaut_worker.rb: fixed worker messages
+
 2012-01-24  Krzysztof Kowalik  <chris@nu7hat.ch>
 
 	* lib/kosmonaut/client.rb: request_single_access_token adjusted to new proto
