@@ -1,14 +1,17 @@
 PATH
   remote: .
   specs:
-    kosmonaut (0.2.0)
+    kosmonaut (0.3.0)
       json (~> 1.0)
 
 GEM
   remote: http://rubygems.org/
   specs:
-    json (1.6.1)
-    minitest (2.10.0)
+    json (1.6.5)
+    minitest (2.11.0)
+    rake (0.8.7)
+    rdoc (3.12)
+      json (~> 1.4)
 
 PLATFORMS
   ruby
@@ -16,3 +19,5 @@ PLATFORMS
 DEPENDENCIES
   kosmonaut!
   minitest (~> 2.0)
+  rake (= 0.8.7)
+  rdoc

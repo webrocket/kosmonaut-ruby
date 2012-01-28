@@ -1,6 +1,11 @@
 Releases
 ========
 
+v0.3.1
+------
+* Documentation.
+* Listener doesn't try to reconnect when unauthenticated.
+
 v0.3.0
 ------
 * Kosmonaut::Client#request_single_access token gets 2 arguments now - uid and

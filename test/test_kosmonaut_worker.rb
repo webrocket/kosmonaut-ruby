@@ -2,15 +2,15 @@ require File.expand_path("../helper", __FILE__)
 
 class MyWorker < Kosmonaut::Worker
   def on_message(event, data)
-    puts "MSG", event, data
+    puts "MSG : #{event} : #{data.inspect}"
   end
   
   def on_error(err)
-    puts "ERR", err.to_s
+    puts "ERR : #{err.to_s}"
   end
 
   def on_exception(err)
-    puts "EXC", err.to_s
+    puts "EXC : #{err.to_s}"
   end
 end
 
