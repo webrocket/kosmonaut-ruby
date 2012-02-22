@@ -74,6 +74,7 @@ module Kosmonaut
     def listen
       @alive = true
       reconnect
+
       while true
         begin
           if !alive?
@@ -81,26 +82,12 @@ module Kosmonaut
             disconnect
             break
           end
-          unless @sock
-            raise Errno::ECONNREFUSED
-          end
+
+          raise Errno::ECONNREFUSED unless @sock
 
           msg = recv(@sock)
-          raise Errno::ECONNRESET if msg.empty?
           Kosmonaut.log("Worker/RECV : #{msg.join("\n").inspect}")
-          cmd = msg.shift
-
-          case cmd
-          when "HB"
-            # nothing to do...
-          when "QT"
-            reconnect
-            next
-          when "TR"
-            message_handler(msg[0])
-          when "ER"
-            error_handler(msg.size < 1 ? 597 : msg[0])
-          end
+          dispatch(msg)
 
           raise Errno::ECONNRESET if @sock.eof?
         rescue Errno::EAGAIN, Errno::ECONNRESET, Errno::ECONNREFUSED, IOError => err
@@ -133,7 +120,25 @@ module Kosmonaut
     def socket_type
       "dlr"
     end
-    
+
+    # Internal: Dispatches the incoming message.
+    #
+    # msg - A message to be dispatched.
+    #
+    def dispatch(msg)
+      cmd = msg.shift
+      case cmd
+      when "HB"
+        # nothing to do...
+      when "QT", nil
+        raise Errno::ECONNRESET
+      when "TR"
+        message_handler(msg[0])
+      when "ER"
+        error_handler(msg.size < 1 ? 597 : msg[0])
+      end
+    end
+
     # Internal: Packs given payload and writes it to the specified socket.
     #
     # sock          - The socket to write to.
