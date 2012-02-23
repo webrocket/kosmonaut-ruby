@@ -72,34 +72,14 @@ module Kosmonaut
     #
     # Raises Kosmonaut::UnauthorizedError if worker's credentials are invalid.
     def listen
+      return false if alive?
       @alive = true
       reconnect
 
       while true
-        begin
-          if !alive?
-            send(@sock, ["QT"])
-            disconnect
-            break
-          end
-
-          raise Errno::ECONNREFUSED unless @sock
-
-          msg = recv(@sock)
-          Kosmonaut.log("Worker/RECV : #{msg.join("\n").inspect}")
-          dispatch(msg)
-
-          raise Errno::ECONNRESET if @sock.eof?
-        rescue Errno::EAGAIN, Errno::ECONNRESET, Errno::ECONNREFUSED, IOError => err
-          Kosmonaut.log("Worker/RECONNECT: " + err.to_s)
-          sleep(@reconnect_delay.to_f / 1000.0)
-          reconnect
-        end
-        # Send heartbeat if it's time.
-        if Time.now.to_f > @heartbeat_at && @sock
-          send(@sock, ["HB"])
-          @heartbeat_at = Time.now.to_f + (@heartbeat_ivl.to_f / 1000.0)
-        end
+        disconnect and break unless alive?
+        receive_and_process or reconnect(true)
+        heartbeat if Time.now.to_f > @heartbeat_at
       end
     end
     
@@ -121,22 +101,47 @@ module Kosmonaut
       "dlr"
     end
 
+    # Internal: Receives a message from the server and dispatches it.
+    # 
+    # Returns false if message couldn't be processed or socket has been closed. 
+    def receive_and_process
+      return unless @sock
+      msg = recv(@sock)
+      Kosmonaut.log("Worker/RECV : #{msg.join("\n").inspect}")
+      dispatch(msg) && !@sock.eof?
+    rescue Errno::EAGAIN, Errno::ECONNRESET, Errno::ECONNREFUSED, IOError => err
+      Kosmonaut.log("Worker/DISCONNECTED: " + err.to_s)
+      return false
+    end
+
+    # Internal: Sends heartbeat message to the server and updates
+    # heartbeat schedule.
+    def heartbeat
+      return unless @sock
+      send(@sock, ["HB"])
+      @heartbeat_at = Time.now.to_f + (@heartbeat_ivl.to_f / 1000.0)
+    end
+
     # Internal: Dispatches the incoming message.
     #
     # msg - A message to be dispatched.
     #
+    # Returns false if server sent a quit message.
     def dispatch(msg)
       cmd = msg.shift
+
       case cmd
       when "HB"
         # nothing to do...
       when "QT", nil
-        raise Errno::ECONNRESET
+        return false
       when "TR"
         message_handler(msg[0])
       when "ER"
         error_handler(msg.size < 1 ? 597 : msg[0])
       end
+
+      true
     end
 
     # Internal: Packs given payload and writes it to the specified socket.
@@ -145,6 +150,7 @@ module Kosmonaut
     # payload       - The payload to be packed and sent.
     # with_identity - Whether identity should be prepend to the packet.
     #
+    # Returns always nil
     def send(sock, payload, with_identity=false)
       return unless sock
       packet = pack(payload, with_identity)
@@ -155,16 +161,29 @@ module Kosmonaut
     end
     
     # Internal: Disconnects and cleans up the socket if connected.
+    #
+    # Returns always true. 
     def disconnect
-      @sock.close if @sock
-      @sock = nil
+      if @sock
+        @sock.send(@sock, ["QT"]) rescue nil
+        @sock.close
+      end
     rescue IOError
+      # nothing to do...
+    ensure
+      @sock = nil
+      return true
     end
 
     # Internal: Sets up new connection with the backend endpoint and sends
     # information that it's ready to work. Also initializes heartbeat 
     # scheduling.
-    def reconnect
+    #
+    # wait - If true, then it will wait before the reconnect try
+    #
+    def reconnect(wait=false)
+      disconnect
+      sleep(@reconnect_delay.to_f / 1000.0) if wait
       @sock = connect(((@heartbeat_ivl * 2).to_f / 1000.0).to_i + 1)
       send(@sock, ["RD"], true)
       @heartbeat_at = Time.now.to_f + (@heartbeat_ivl.to_f / 1000.0)
