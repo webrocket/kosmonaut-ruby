@@ -1,3 +1,11 @@
+2012-02-23  Krzysztof Kowalik  <chris@nu7hat.ch>
+
+	* lib/kosmonaut/worker.rb: keep polish the code, fixed minor bugs
+
+2012-02-22  Krzysztof Kowalik  <chris@nu7hat.ch>
+
+	* lib/kosmonaut/worker.rb: polished code
+
 2012-01-28  Krzysztof Kowalik  <chris@nu7hat.ch>
 
 	* lib/kosmonaut/: documentation and minor fixes

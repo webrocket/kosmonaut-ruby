@@ -78,8 +78,9 @@ module Kosmonaut
 
       while true
         disconnect and break unless alive?
-        receive_and_process or reconnect(true)
-        heartbeat if Time.now.to_f > @heartbeat_at
+        reconnect(true) until @sock
+        receive_and_process or (disconnect and next)
+        heartbeat_if_time
       end
     end
     
@@ -105,7 +106,6 @@ module Kosmonaut
     # 
     # Returns false if message couldn't be processed or socket has been closed. 
     def receive_and_process
-      return unless @sock
       msg = recv(@sock)
       Kosmonaut.log("Worker/RECV : #{msg.join("\n").inspect}")
       dispatch(msg) && !@sock.eof?
@@ -116,8 +116,8 @@ module Kosmonaut
 
     # Internal: Sends heartbeat message to the server and updates
     # heartbeat schedule.
-    def heartbeat
-      return unless @sock
+    def heartbeat_if_time
+      return if Time.now.to_f < @heartbeat_at
       send(@sock, ["HB"])
       @heartbeat_at = Time.now.to_f + (@heartbeat_ivl.to_f / 1000.0)
     end
@@ -152,7 +152,6 @@ module Kosmonaut
     #
     # Returns always nil
     def send(sock, payload, with_identity=false)
-      return unless sock
       packet = pack(payload, with_identity)
       sock.write(packet)
       Kosmonaut.log("Worker/SENT : #{packet.inspect}")
@@ -165,7 +164,7 @@ module Kosmonaut
     # Returns always true. 
     def disconnect
       if @sock
-        @sock.send(@sock, ["QT"]) rescue nil
+        send(@sock, ["QT"]) rescue nil
         @sock.close
       end
     rescue IOError
@@ -182,7 +181,6 @@ module Kosmonaut
     # wait - If true, then it will wait before the reconnect try
     #
     def reconnect(wait=false)
-      disconnect
       sleep(@reconnect_delay.to_f / 1000.0) if wait
       @sock = connect(((@heartbeat_ivl * 2).to_f / 1000.0).to_i + 1)
       send(@sock, ["RD"], true)
