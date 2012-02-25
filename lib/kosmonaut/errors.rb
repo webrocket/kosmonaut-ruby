@@ -60,6 +60,18 @@ module Kosmonaut
     end
   end
 
+  class UndefinedHandler < Error
+    def initialize(path)
+      super "No handler defined for: #{path}"
+    end
+  end
+
+  class InvalidBackendEvent < Error
+    def initialize(event)
+      super "Invalid event received: #{event}"
+    end
+  end
+
   ERRORS = {
     400 => BadRequestError,
     402 => UnauthorizedError,

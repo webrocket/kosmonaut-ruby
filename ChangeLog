@@ -1,6 +1,15 @@
+2012-02-25  Krzysztof Kowalik  <chris@nu7hat.ch>
+
+	* lib/kosmonaut/worker.rb: Worker#listen renamed to Worker#run
+	* lib/kosmonaut/application.rb: created Application as default workers builder
+	* lib/kosmonaut/message.rb: created unified Message wrapper
+	* lib/kosmonaut/errors.rb: added application related errors
+	* README: updated examples
+	* kosmonaut.gemspec: added activesupport and hashie to dependencies
+
 2012-02-23  Krzysztof Kowalik  <chris@nu7hat.ch>
 
-	* lib/kosmonaut/worker.rb: keep polish the code, fixed minor bugs
+	* lib/kosmonaut/worker.rb: keep polishing the code, fixed minor bugs
 
 2012-02-22  Krzysztof Kowalik  <chris@nu7hat.ch>
 

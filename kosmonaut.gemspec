@@ -17,5 +17,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_dependency "json", "~> 1.0"
+  s.add_dependency "active_support", ">= 3.0"
+  s.add_dependency "hashie"
   s.add_development_dependency "minitest", "~> 2.0"
 end

@@ -12,6 +12,7 @@ require 'kosmonaut/errors'
 require 'kosmonaut/socket'
 require 'kosmonaut/worker'
 require 'kosmonaut/client'
+require 'kosmonaut/application'
 require 'kosmonaut/version'
 
 module Kosmonaut

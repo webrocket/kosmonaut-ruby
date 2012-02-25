@@ -10,6 +10,7 @@
  
 require 'json'
 require 'thread'
+require 'kosmonaut/message'
 
 module Kosmonaut
   # Public: Worker is an implementation of SUBSCRIBER socket which handles
@@ -52,6 +53,9 @@ module Kosmonaut
     # Number of milliseconds between next heartbeat message.
     HEARTBEAT_INTERVAL = 500
 
+    # Public: The WebRocket backend encpoint URL.
+    attr_reader :url
+
     # Public: The Worker constructor. Pre-configures the worker instance. See
     # also the Kosmonaut::Socket#initialize to get more information.
     #
@@ -67,11 +71,11 @@ module Kosmonaut
       @heartbeat_at = 0
     end
 
-    # Public: Listen starts a listener's loop for the worker. Listener implements
+    # Public: Starts a listener's loop for the worker. Listener implements
     # the Majordomo pattern to manage connection with the backend. 
     #
     # Raises Kosmonaut::UnauthorizedError if worker's credentials are invalid.
-    def listen
+    def run
       return false if alive?
       @alive = true
       reconnect
@@ -83,6 +87,7 @@ module Kosmonaut
         heartbeat_if_time
       end
     end
+    alias_method :listen, :run
     
     # Public: Breaks the listener's loop and stops execution of
     # the worker. 
@@ -196,7 +201,8 @@ module Kosmonaut
     def message_handler(data)
       if respond_to?(:on_message)
         payload = JSON.parse(data.to_s)
-        on_message(*payload.first)
+        message = Message.new(*(payload.first + [self]))
+        on_message(message)
       end
     rescue => err
       exception_handler(err)
