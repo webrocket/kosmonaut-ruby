@@ -53,9 +53,6 @@ module Kosmonaut
     # Number of milliseconds between next heartbeat message.
     HEARTBEAT_INTERVAL = 500
 
-    # Public: The WebRocket backend encpoint URL.
-    attr_reader :url
-
     # Public: The Worker constructor. Pre-configures the worker instance. See
     # also the Kosmonaut::Socket#initialize to get more information.
     #
@@ -78,6 +75,7 @@ module Kosmonaut
     def run
       return false if alive?
       @alive = true
+      Signal.trap("INT") { @alive = false }
       reconnect
 
       while true
@@ -201,7 +199,7 @@ module Kosmonaut
     def message_handler(data)
       if respond_to?(:on_message)
         payload = JSON.parse(data.to_s)
-        message = Message.new(*(payload.first + [self]))
+        message = Message.new(self.uri.to_s, *payload.first)
         on_message(message)
       end
     rescue => err

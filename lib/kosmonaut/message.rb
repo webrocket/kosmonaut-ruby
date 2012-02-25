@@ -8,7 +8,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-require 'hashie'
+require 'active_support/hash_with_indifferent_access'
 
 module Kosmonaut
   # Public: Message is an unified wrapper for the incoming events.
@@ -19,23 +19,23 @@ module Kosmonaut
   #     def save_to_history_and_broadcast(msg)
   #       room = Room.find(msg.room)
   #       room.history.append(msg)
-  #       msg.broadcast_copy("presence-#{room.name}")
+  #       msg.broadcast_copy("presence-#{room[:name]}")
   #     end
   #   end
   #
-  class Message < Hashie::Mash
+  class Message < HashWithIndifferentAccess
     # Public: The name of the event.
     attr_reader :event
 
     # Internal: Constructor, creates new message.
     #
+    # url    - The String url of the backend endpoint.
     # event  - The String event name.
     # data   - The Hash message payload.
-    # worker - The Worker which received the message.
     #
-    def new(event, data, worker=nil)
+    def initialize(url, event, data={})
       @event = event
-      @client = Client.new(worker.url) if worker
+      @client = Client.new(url)
       super(data)
     end
 
@@ -48,8 +48,8 @@ module Kosmonaut
     # Example:
     #
     #   def hello(msg)
-    #     msg.broadcast_reply("private-#{msg.author}", "hello", {
-    #       :greeting => "Hi, how are you #{msg.author_full_name}"
+    #     msg.broadcast_reply("private-#{msg[:author]}", "hello", {
+    #       :greeting => "Hi, how are you #{msg[:author_full_name]}"
     #     })
     #   end
     #
@@ -60,23 +60,24 @@ module Kosmonaut
     # Public: Broadcasts copy of the message on the specified channel.
     #
     # channel - The String channel name to broadcast to.
-    #
+    # event   - The String event name to be broadcasted (default: original
+    #           event name).
     # Example:
     #
     #   def save_to_history_and_broadcast(msg)
     #     room = Room.find(msg.room)
     #     room.history.append(msg)
-    #     msg.broadcast_copy("presence-#{room.name}")
+    #     msg.broadcast_copy("presence-#{room[:name]}")
     #   end
     #
-    def broadcast_copy(channel)
-      broadcast_reply(channel, self.event, self.to_hash)
+    def broadcast_copy(channel, event=nil)
+      broadcast_reply(channel, event || self.event, self.to_hash)
     end
 
     # Public: Sends direct reply to the message sender.
     #
-    # event   - The String event name to be broadcasted.
-    # data    - The Hash payload. 
+    # event - The String event name to be broadcasted.
+    # data  - The Hash payload. 
     #
     # NOTE: This method is not implemented yet.
     def direct_reply(event, data)

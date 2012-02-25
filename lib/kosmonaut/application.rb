@@ -25,7 +25,7 @@ module Kosmonaut
   #     end
   #   end
   #
-  #   Kosmonaut::Application.build do
+  #   Kosmonaut::Application.build "wr://token@127.0.0.1:8081/vhost" do
   #     use ChatBackend, :as => "chat"
   #     run
   #   end
@@ -35,12 +35,19 @@ module Kosmonaut
     attr_accessor :logger
 
     # Public: Syntactic sugar for the constructor.
-    def self.build(&block)
-      new(&block)
+    #
+    # url - The WebRocket backend endpoint URL to connect to.
+    #
+    def self.build(url, &block)
+      new(url, &block)
     end
 
     # Internal: Constructor, executes given block within its instance.
-    def initialize(&block)
+    #
+    # url - The WebRocket backend endpoint URL to connect to.
+    #
+    def initialize(url, &block)
+      super(url)
       @handlers = {}
       instance_eval(&block)
     end
@@ -80,6 +87,7 @@ module Kosmonaut
       raise InvalidBackendEvent(message.event) if search_for.size < 2
       klass = @handlers[search_for[0]] and handler = klass.method(search_for[1])
       raise UndefinedHandler.new(message.event) unless handler
+      logger.info("#{message.event}, #{message.inspect}")
       handler.call(message)
     end
 

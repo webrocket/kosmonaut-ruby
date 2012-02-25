@@ -34,12 +34,12 @@ it in user's desired way, example:
     class ChatBackend
       # This method will be triggered on 'chat/save_to_history' event.
       def save_to_history(msg)
-        room.find(msg.room)
+        room.find(msg[:room])
         room.history.append(msg)
       end
     end
 
-    Kosmonaut::Application.new do
+    Kosmonaut::Application.build "wr://token@127.0.0.1:8081/vhost" do
       use ChatBackend, :as => "chat"
       run
     end
